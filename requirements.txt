@@ -1,0 +1,9 @@
+spacy
+scipy
+numpy
+sklearn
+tensorflow
+gensim
+imblearn
+pandas
+tqdm
