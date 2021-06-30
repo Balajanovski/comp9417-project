@@ -1,11 +1,33 @@
 import pandas as pd
-from imblearn.under_sampling import RandomUnderSampler
 import spacy
-from under_sampler import sample_train, get_test
+from src.under_sampler import sample_raw_data
+import numpy as np
+from processed_data.processed_data_folder import PROCESSED_DATA_FOLDER_PATH
+import os
+import tqdm
 
-def process_save_csv(X, y, path):
+
+def main():
+    X, y = sample_raw_data()
+
+    X = nlp_cleanup(X)
+    save_data_csv(X, y)
+    create_and_save_word_map(X)
+
+
+def nlp_cleanup(X: np.ndarray) -> np.ndarray:
     nlp = spacy.load("en_core_web_sm")
-    X = list(map(lambda text: " ".join([token.lemma_ for token in nlp(text) if not token.is_stop]), X))
+
+    cleaned_data = np.array([
+        " ".join(token.lemma_ for token in nlp(X_row[0].lower()) if not token.is_stop and token.lemma_ in nlp.vocab)
+        for X_row in tqdm.tqdm(X, desc="Cleaning data")
+    ])
+
+    return cleaned_data
+
+
+def save_data_csv(X: np.ndarray, y: np.ndarray) -> None:
+    print("Saving data")
 
     data_processed = {
         "question_text": X,
@@ -13,29 +35,26 @@ def process_save_csv(X, y, path):
     }
 
     df = pd.DataFrame(data_processed)
-    df.to_csv(path, index=False)
+    df.to_csv(os.path.join(PROCESSED_DATA_FOLDER_PATH, "processed_train.csv"), index=False)
 
-if __name__ == "__main__":
-    X_train, y_train = sample_train()
-    #X_test, y_test = get_test()
-    process_save_csv(X_train, y_train, "processed_data/processed_train.csv")
-    #process_save_csv(X_test, y_test, "processed_data/processed_test.csv")
+    print("Saved data")
 
-    nlp = spacy.load("en_core_web_sm")
-    X = list(map(lambda text: " ".join([token.lemma_ for token in nlp(text) if not token.is_stop]), X_train))
 
-    word_map = dict()
+def create_and_save_word_map(X: np.ndarray) -> None:
+    word_map = {}
+
     count = 0
-    for words in X:
-        for word in words.split(" "):
+    for X_row in tqdm.tqdm(X, desc="Creating word map"):
+        for word in X_row.split(" "):
             if not word in word_map:
                 word_map[word] = count
                 count += 1
 
-    word_map_list = [word for word in word_map.keys()]
+    df_word_map = pd.DataFrame({"words": word_map.keys(), "encoded": word_map.values()})
 
-    df_word_map = pd.DataFrame(word_map_list)
-
-    df_word_map.to_csv("data/word_map.csv", index=False)
+    df_word_map.to_csv(os.path.join(PROCESSED_DATA_FOLDER_PATH, "word_map.csv"), index=False)
     print(f"Number of different words: {count}")
-    
+
+
+if __name__ == "__main__":
+    main()
