@@ -23,13 +23,18 @@ def create_bags_of_words(train_data: List[str], test_data: List[str], is_binary:
     X_test = vectorizer.transform(test_data)
     return X_train, X_test
 
-def load_data(is_binary: bool = True, min_ngram: int = 1, max_ngram: int = 1) -> Tuple[np.array, np.array, np.array, np.array]:
+def load_data_raw() -> Tuple[List[str], np.array, List[str], np.array]:
     df = pd.read_csv(os.path.join(PROCESSED_DATA_FOLDER_PATH, "processed_train.csv"))
     df["question_text"] = df["question_text"].apply(str)
     X, y = df["question_text"].to_list(), df["target"].to_numpy()
     X, y = sample_data(X, y)
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=8)
+
+    return X_train, X_test, y_train, y_test
+
+def load_data_bow(is_binary: bool = True, min_ngram: int = 1, max_ngram: int = 1) -> Tuple[np.array, np.array, np.array, np.array]:
+    X_train, X_test, y_train, y_test = load_data_raw()
 
     X_train, X_test = create_bags_of_words(X_train, X_test, is_binary, min_ngram, max_ngram)
 

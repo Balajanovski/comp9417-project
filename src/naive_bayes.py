@@ -8,7 +8,7 @@ import sys
 def run_naive_bayes(is_bernouli: bool, min_ngram: int, max_ngram: int):
     st = time()
 
-    X_train, X_test, y_train, y_test = util.load_data(is_bernouli, min_ngram, max_ngram)
+    X_train, X_test, y_train, y_test = util.load_data_bow(is_bernouli, min_ngram, max_ngram)
 
     model = BernoulliNB() if is_bernouli else MultinomialNB()
 
