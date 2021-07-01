@@ -1,20 +1,21 @@
 import pandas as pd
-from imblearn.under_sampling import RandomUnderSampler
-from typing import Tuple
+from typing import Tuple, List
 import numpy as np
-from data.data_folder import DATA_FOLDER_PATH
-import os
+import random
 
+def sample_data(X: List[str], y: np.ndarray) -> Tuple[List[str], np.ndarray]:
+    pos_index = []
+    neg_index = []
 
-def sample_raw_data() -> Tuple[np.ndarray, np.ndarray]:
-    print("Sampling raw data")
+    for i in range(y.shape[0]):
+        if y[i]:
+            pos_index.append(i)
+        else:
+            neg_index.append(i)
 
-    df = pd.read_csv(os.path.join(DATA_FOLDER_PATH, "train.csv"))
-    X, y = df["question_text"].to_numpy(), df["target"].to_numpy()
+    sample_amount = min(len(pos_index), len(neg_index))
 
-    sampler = RandomUnderSampler(random_state=0)
-    X, y = sampler.fit_resample(X.reshape(-1,1),y)
+    random.seed(8)
+    final_index = random.sample(pos_index, sample_amount) + random.sample(neg_index, sample_amount)
 
-    print("Sampled raw data")
-
-    return X, y
+    return [X[i] for i in final_index], y[final_index]
