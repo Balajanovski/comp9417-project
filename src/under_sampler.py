@@ -3,6 +3,7 @@ from typing import Tuple, List
 import numpy as np
 import random
 
+
 def sample_data(X: List[str], y: np.ndarray) -> Tuple[List[str], np.ndarray]:
     pos_index = []
     neg_index = []

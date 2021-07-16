@@ -1,9 +1,9 @@
 import src.util as util
 from sklearn.svm import SVC, LinearSVC
 from time import time
-import tqdm
 from src.metrics import print_metrics, get_metrics
 import sys
+
 
 def run_svm(is_bernouli, kernel):
     st = time()
@@ -22,14 +22,15 @@ def run_svm(is_bernouli, kernel):
     metrics = get_metrics(y_pred, y_test)
     print_metrics(metrics)
 
-
     print(f"Time: {time()-st}s")
+
 
 def main():
     args = sys.argv
     if args[1] != "bernouli" and args[1] != "multinomial":
-        raise "invalid input, argument 1 must be either 'bernouli' or 'multinomial'"
+        raise RuntimeError("invalid input, argument 1 must be either 'bernouli' or 'multinomial'")
     run_svm(args[1] == "bernouli", args[2])
+
 
 if __name__ == "__main__":
     main()
