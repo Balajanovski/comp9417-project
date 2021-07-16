@@ -7,6 +7,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
 import numpy as np
 from src.under_sampler import sample_data
+from gensim.models import KeyedVectors
 
 def load_word_map():
     word_map_df = pd.read_csv(os.path.join(PROCESSED_DATA_FOLDER_PATH, "word_map.csv"), dtype="string", keep_default_na=False, na_filter=False)
@@ -39,3 +40,26 @@ def load_data_bow(is_binary: bool = True, min_ngram: int = 1, max_ngram: int = 1
     X_train, X_test = create_bags_of_words(X_train, X_test, is_binary, min_ngram, max_ngram)
 
     return X_train, X_test, y_train, y_test
+
+def load_data_word2vec_sentence() -> Tuple[np.array, np.array, np.array, np.array]:
+    map = KeyedVectors.load_word2vec_format("embeddings/GoogleNews-vectors-negative300/GoogleNews-vectors-negative300.bin", binary=True);
+    X_train_strings, X_test_strings, y_train, y_test = load_data_raw()
+    X_train = np.zeros((len(X_train_strings),300))
+    X_test = np.zeros((len(X_test_strings),300))
+    for i,s in enumerate(X_train_strings):
+        X_train[i] = np.average([get_word2vec_from_map(word, map) for word in s.split(" ")], axis=1)
+    for i,s in enumerate(X_test_strings):
+        X_test[i] = np.average([get_word2vec_from_map(word, map) for word in s.split(" ")], axis=1)
+    return X_train, X_test, y_train, y_test
+
+def load_data_word2vec_lstm() -> Tuple[List[np.array], np.array, List[np.array], np.array]:
+    map = KeyedVectors.load_word2vec_format("embeddings/GoogleNews-vectors-negative300/GoogleNews-vectors-negative300.bin", binary=True);
+    X_train_strings, X_test_strings, y_train, y_test = load_data_raw()
+    X_train = [[get_word2vec_from_map(word, map) for word in sentence] for sentence in X_train_strings]
+    X_test = [[get_word2vec_from_map(word, map) for word in sentence] for sentence in X_test_strings]
+    return X_train, X_test, y_train, y_test
+
+def get_word2vec_from_map(word: str, map) -> np.array:
+    if not word in map:
+        return np.zeros(300)
+    return map[word]
