@@ -46,8 +46,8 @@ def load_data_word2vec() -> Tuple[np.array, np.array, np.array, np.array]:
     X_train_strings, X_test_strings, y_train, y_test = load_data_raw()
     X_train = np.zeros((X_train_strings.shape[0],300))
     X_test = np.zeros((X_test_strings.shape[0],300))
-    for s in X_train_strings:
-        X_train[s] = map[s]
-    for s in X_test_strings:
-        X_test[s] = map[s]
+    for i,s in enumerate(X_train_strings):
+        X_train[i] = map[s]
+    for i,s in enumerate(X_test_strings):
+        X_test[i] = map[s]
     return X_train, X_test, y_train, y_test
