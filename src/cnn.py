@@ -31,7 +31,7 @@ def main():
 
 def create_cnn_model(
     input_shape: Tuple[int, ...],
-    dropout: float = 0.2,
+    dropout: float = 0.4,
     num_convolutions: int = 3,
     learning_rate: float = 0.000006,
 ) -> tf.keras.Model:

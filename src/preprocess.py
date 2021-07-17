@@ -13,10 +13,10 @@ from typing import List
 def main():
     df = pd.read_csv(os.path.join(DATA_FOLDER_PATH, "train.csv"))
     X_raw, y_raw = df["question_text"].to_list(), df["target"].to_numpy()
+    X_raw, y_raw = sample_data(X_raw, y_raw)
 
     X_train, X_test, y_train, y_test = train_test_split(
         X_raw, y_raw, test_size=0.3, random_state=8, stratify=y_raw)
-    X_train, y_train = sample_data(X_train, y_train)
 
     X_train = nlp_cleanup(X_train)
     X_test = nlp_cleanup(X_test)
