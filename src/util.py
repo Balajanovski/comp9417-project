@@ -83,7 +83,7 @@ def plot_keras_model_learning_curves(history, prefix: str) -> None:
     plt.title("model accuracy")
     plt.ylabel("accuracy")
     plt.xlabel("epoch")
-    plt.legend(["train", "test"], loc="upper left")
+    plt.legend(["train", "val"], loc="upper left")
     plt.savefig(os.path.join(PLOTS_FOLDER_PATH, f"{prefix}_accuracy_curve.png"))
     plt.clf()
 
@@ -92,6 +92,6 @@ def plot_keras_model_learning_curves(history, prefix: str) -> None:
     plt.title("model loss")
     plt.ylabel("loss")
     plt.xlabel("epoch")
-    plt.legend(["train", "test"], loc="upper left")
+    plt.legend(["train", "val"], loc="upper left")
     plt.savefig(os.path.join(PLOTS_FOLDER_PATH, f"{prefix}_loss_curve.png"))
     plt.clf()
