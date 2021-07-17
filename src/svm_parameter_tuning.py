@@ -18,10 +18,7 @@ def run_svm(type, kernel):
     else:
         raise "invalid input, argument 1 must be either 'bernouli', 'multinomial' or 'word2vec'"
     #model = LinearSVC(verbose=1)
-    if kernel == "linear_l1":
-        # speed increase
-        model = LinearSVC(penalty="l1")
-    elif kernel == "linear_l2":
+    if kernel == "linear_l2":
         # speed increase
         model = LinearSVC(penalty="l2")
     else:
