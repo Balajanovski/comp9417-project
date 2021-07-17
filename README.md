@@ -24,14 +24,14 @@ to print out a plot for all ngram numbers up to `ngram_max`
 
 ### Support Vector Machine
 
-`python -m src.svm [distribution_type] [kernel]`
+`python -m src.svm [data_distribution] [kernel]`
 
-where `distribution_type` is either `bernouli` or `multinomial`, `kernel` is the choice of kernel (can be `linear`, `poly`, `rbf`, `sigmoid`)
+where `data_distribution` is either `bernouli` or `multinomial` for bag-of-words or `word2vec` for word vectors. `kernel` is the choice of kernel (can be `linear`, `poly`, `rbf`, `sigmoid`)
 
 Note: non-linear kernels may take up to 20min on CPU to train and predict
 
 ### Tree Learning - Random Forest
 
-`python -m src.random_forest [max_tree_depth] [num_trees]`
+`python -m src.random_forest [max_tree_depth] [num_trees] [data_distribution]`
 
-where `max_tree_depth` is the maximum depth of the tree and `num_trees` is the number of models in the ensemble. 
+where `max_tree_depth` is the maximum depth of the tree and `num_trees` is the number of models in the ensemble. `data_distribution` is either `bernouli` for bag-of-words or `word2vec` for word vectors. 
