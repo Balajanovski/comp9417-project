@@ -6,6 +6,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 import numpy as np
 from gensim.models import KeyedVectors
 from embeddings import EMBEDDINGS_FOLDER_PATH
+import matplotlib.pyplot as plt
+from plots import PLOTS_FOLDER_PATH
 
 def load_word_map():
     word_map_df = pd.read_csv(os.path.join(PROCESSED_DATA_FOLDER_PATH, "word_map.csv"), dtype="string", keep_default_na=False, na_filter=False)
@@ -74,3 +76,22 @@ def get_word2vec_from_map(word: str, map) -> np.array:
     if not word in map:
         return np.zeros(300)
     return map[word]
+
+def plot_keras_model_learning_curves(history, prefix: str) -> None:
+    plt.plot(history.history["accuracy"])
+    plt.plot(history.history["val_accuracy"])
+    plt.title("model accuracy")
+    plt.ylabel("accuracy")
+    plt.xlabel("epoch")
+    plt.legend(["train", "test"], loc="upper left")
+    plt.savefig(os.path.join(PLOTS_FOLDER_PATH, f"{prefix}_accuracy_curve.png"))
+    plt.clf()
+
+    plt.plot(history.history["loss"])
+    plt.plot(history.history["val_loss"])
+    plt.title("model loss")
+    plt.ylabel("loss")
+    plt.xlabel("epoch")
+    plt.legend(["train", "test"], loc="upper left")
+    plt.savefig(os.path.join(PLOTS_FOLDER_PATH, f"{prefix}_loss_curve.png"))
+    plt.clf()
