@@ -1,7 +1,6 @@
 import src.util as util
 from sklearn.naive_bayes import BernoulliNB, MultinomialNB
 from time import time
-import tqdm
 from src.metrics import print_metrics, get_metrics
 import sys
 import matplotlib.pyplot as plt

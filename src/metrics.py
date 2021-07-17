@@ -1,6 +1,9 @@
 import numpy as np
 from sklearn.metrics import precision_score, recall_score, accuracy_score, f1_score, roc_auc_score
 from typing import Dict
+import tensorflow.keras.metrics as metrics
+from typing import List
+
 
 def get_metrics(y_pred: np.ndarray, y_actual: np.ndarray) -> Dict[str, float]:
     metrics = dict()
@@ -19,3 +22,16 @@ def print_metrics(metrics: Dict[str, float]) -> None:
           f"\tAccuracy: {metrics['accuracy']}\n"
           f"\tF1: {metrics['f1']}\n"
           f"\tAuc roc: {metrics['auc_roc']}\n")
+
+def make_keras_model_metrics() -> List[metrics.Metric]:
+    return [
+        metrics.TruePositives(name="tp"),
+        metrics.FalsePositives(name="fp"),
+        metrics.TrueNegatives(name="tn"),
+        metrics.FalseNegatives(name="fn"),
+        metrics.BinaryAccuracy(name="accuracy"),
+        metrics.Precision(name="precision"),
+        metrics.Recall(name="recall"),
+        metrics.AUC(name="aucpr", curve="PR"),
+        metrics.AUC(name="aucroc", curve="ROC"),
+    ]

@@ -6,6 +6,7 @@ from src.metrics import print_metrics, get_metrics
 import sys
 import numpy as np
 from sklearn.model_selection import GridSearchCV, KFold
+import matplotlib.pyplot as plt
 
 def random_forest(n_trees, type):
     st = time()
@@ -14,10 +15,10 @@ def random_forest(n_trees, type):
     elif type == "word2vec":
         X_train, X_test, y_train, y_test = util.load_data_word2vec_sentence()
     else:
-        raise "third argument must be `bernouli` or `word2vec`"
+        raise "third argument must be `bernoulli` or `word2vec`"
     
-    max_depth = np.linspace(2, 4, 10)
-    max_depth = 10 ** max_depth
+    max_depth_log = np.linspace(2, 4, 20)
+    max_depth = 10 ** max_depth_log
 
     model = RandomForestClassifier(n_estimators=n_trees, n_jobs=-1)
     param_search = GridSearchCV(model, verbose=1, cv=KFold(n_splits=4).split(X_train), n_jobs=-1, param_grid={"max_depth": max_depth})
@@ -30,8 +31,12 @@ def random_forest(n_trees, type):
     metrics = get_metrics(y_pred, y_test)
     print_metrics(metrics)
 
-
     print(f"Time: {time()-st}s")
+
+    plt.plot(max_depth_log, param_search.cv_results_["mean_test_score"])
+    plt.xlabel("log(max_depth)")
+    plt.ylabel("average CV test accuracy")
+    plt.show()
 
 def main():
     args = sys.argv
