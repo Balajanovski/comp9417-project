@@ -18,7 +18,7 @@ def main():
         X_train,
         y_train,
         batch_size=32,
-        epochs=1,
+        epochs=100,
         validation_split=0.2,
         shuffle=True,
         callbacks=[early_stopping],
