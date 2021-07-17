@@ -14,6 +14,8 @@ def sample_data(X: List[str], y: np.ndarray) -> Tuple[List[str], np.ndarray]:
         else:
             neg_index.append(i)
 
+    print(f"Num positive examples: {len(pos_index)}. Num negative examples: {len(neg_index)}")
+
     sample_amount = min(len(pos_index), len(neg_index))
 
     random.seed(8)

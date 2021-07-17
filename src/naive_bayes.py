@@ -1,7 +1,6 @@
 import src.util as util
 from sklearn.naive_bayes import BernoulliNB, MultinomialNB
 from time import time
-import tqdm
 from src.metrics import print_metrics, get_metrics
 import sys
 import matplotlib.pyplot as plt
@@ -38,7 +37,7 @@ def main():
     args = sys.argv
 
     if args[1] != "bernouli" and args[1] != "multinomial":
-        raise "invalid input, argument 1 must be either 'bernouli' or 'multinomial'"
+        raise RuntimeError("invalid input, argument 1 must be either 'bernouli' or 'multinomial'")
     
     if len(args) == 3:
         plot_all(int(args[2]), args[1] == "bernouli")

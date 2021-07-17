@@ -3,9 +3,7 @@ from processed_data.processed_data_folder import PROCESSED_DATA_FOLDER_PATH
 import os
 from typing import List, Tuple, Optional
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.model_selection import train_test_split
 import numpy as np
-from src.under_sampler import sample_data
 from gensim.models import KeyedVectors
 from embeddings import EMBEDDINGS_FOLDER_PATH
 
@@ -25,12 +23,13 @@ def create_bags_of_words(train_data: List[str], test_data: List[str], is_binary:
     return X_train, X_test
 
 def load_data_raw() -> Tuple[List[str], np.array, List[str], np.array]:
-    df = pd.read_csv(os.path.join(PROCESSED_DATA_FOLDER_PATH, "processed_train.csv"))
-    df["question_text"] = df["question_text"].apply(str)
-    X, y = df["question_text"].to_list(), df["target"].to_numpy()
-    X, y = sample_data(X, y)
+    train_df = pd.read_csv(os.path.join(PROCESSED_DATA_FOLDER_PATH, "processed_train.csv"))
+    train_df["question_text"] = train_df["question_text"].apply(str)
+    X_train, y_train = train_df["question_text"].to_list(), train_df["target"].to_numpy()
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=8)
+    test_df = pd.read_csv(os.path.join(PROCESSED_DATA_FOLDER_PATH, "processed_test.csv"))
+    test_df["question_text"] = test_df["question_text"].apply(str)
+    X_test, y_test = train_df["question_text"].to_list(), train_df["target"].to_numpy()
 
     return X_train, X_test, y_train, y_test
 
