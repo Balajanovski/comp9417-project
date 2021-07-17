@@ -1,5 +1,7 @@
 import src.util as util
 from sklearn.svm import SVC, LinearSVC
+from scipy.stats import uniform
+from sklearn.model_selection import RandomizedSearchCV, KFold
 from time import time
 import tqdm
 from src.metrics import print_metrics, get_metrics
@@ -16,18 +18,26 @@ def run_svm(type, kernel):
     else:
         raise "invalid input, argument 1 must be either 'bernouli', 'multinomial' or 'word2vec'"
     #model = LinearSVC(verbose=1)
-    if kernel == "linear":
+    if kernel == "linear_l1":
         # speed increase
-        model = LinearSVC(verbose=1)
+        model = LinearSVC(penalty="l1")
+    elif kernel == "linear_l2":
+        # speed increase
+        model = LinearSVC(penalty="l2")
     else:
-        model = SVC(kernel=kernel, verbose=1)
+        model = SVC(kernel=kernel)
 
-    print("Fitting model")
-    model.fit(X_train, y_train)
+    randomised_search = RandomizedSearchCV(model, cv = KFold(n_splits=4).split(X_train), param_distributions={"C":uniform(0.001, 2)}, random_state=8, n_jobs=-1, n_iter=12, verbose=1)
+
+    print("Fitting randomised search")
+    randomised_search.fit(X_train, y_train)
+    model = randomised_search.best_estimator_
+
+    print(f"Best model: {model}")
+
     y_pred = model.predict(X_test)
     metrics = get_metrics(y_pred, y_test)
     print_metrics(metrics)
-
 
     print(f"Time: {time()-st}s")
 

@@ -47,9 +47,9 @@ def load_data_word2vec_sentence() -> Tuple[np.array, np.array, np.array, np.arra
     X_train = np.zeros((len(X_train_strings),300))
     X_test = np.zeros((len(X_test_strings),300))
     for i,s in enumerate(X_train_strings):
-        X_train[i] = np.average([get_word2vec_from_map(word, wordvec_map) for word in s.split(" ")], axis=1)
+        X_train[i] = np.average([get_word2vec_from_map(word, wordvec_map) for word in s.split(" ")], axis=0)
     for i,s in enumerate(X_test_strings):
-        X_test[i] = np.average([get_word2vec_from_map(word, wordvec_map) for word in s.split(" ")], axis=1)
+        X_test[i] = np.average([get_word2vec_from_map(word, wordvec_map) for word in s.split(" ")], axis=0)
     return X_train, X_test, y_train, y_test
 
 def load_data_word2vec_deep_learning(sequence_length: Optional[int] = None) -> Tuple[np.array, np.array, np.array, np.array]:
