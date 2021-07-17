@@ -29,7 +29,7 @@ def load_data_raw() -> Tuple[List[str], np.array, List[str], np.array]:
 
     test_df = pd.read_csv(os.path.join(PROCESSED_DATA_FOLDER_PATH, "processed_test.csv"))
     test_df["question_text"] = test_df["question_text"].apply(str)
-    X_test, y_test = train_df["question_text"].to_list(), train_df["target"].to_numpy()
+    X_test, y_test = test_df["question_text"].to_list(), test_df["target"].to_numpy()
 
     return X_train, X_test, y_train, y_test
 
