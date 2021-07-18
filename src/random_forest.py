@@ -1,19 +1,18 @@
 import src.util as util
 from sklearn.ensemble import RandomForestClassifier
 from time import time
-import tqdm
 from src.metrics import print_metrics, get_metrics
 import sys
 
 
-def random_forest(max_depth, n_trees, type):
+def random_forest(path: str, max_depth, n_trees, type):
     st = time()
     if type == "bernouli":
-        X_train, X_test, y_train, y_test = util.load_data_bow(True, 1, 1)
+        X_train, X_test, y_train, y_test = util.load_data_bow(path, True, 1, 1)
     elif type == "word2vec":
-        X_train, X_test, y_train, y_test = util.load_data_word2vec_sentence()
+        X_train, X_test, y_train, y_test = util.load_data_word2vec_sentence(path)
     else:
-        raise "third argument must be `bernouli` or `word2vec`"
+        raise RuntimeError("third argument must be `bernouli` or `word2vec`")
 
     model = RandomForestClassifier(
         n_estimators=n_trees, max_depth=max_depth, verbose=1, n_jobs=-1
@@ -33,8 +32,9 @@ def main():
     max_depth = int(args[1])
     n_trees = int(args[2])
     type = args[3]
+    path = args[4]
 
-    random_forest(max_depth, n_trees, type)
+    random_forest(path, max_depth, n_trees, type)
 
 
 if __name__ == "__main__":

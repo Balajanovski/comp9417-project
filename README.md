@@ -32,6 +32,6 @@ Note: non-linear kernels may take up to 20min on CPU to train and predict
 
 ### Tree Learning - Random Forest
 
-`python -m src.random_forest [max_tree_depth] [num_trees] [data_distribution]`
+`python -m src.random_forest [max_tree_depth] [num_trees] [data_distribution] [data_file]`
 
 where `max_tree_depth` is the maximum depth of the tree and `num_trees` is the number of models in the ensemble. `data_distribution` is either `bernouli` for bag-of-words or `word2vec` for word vectors. 
