@@ -28,7 +28,7 @@ def main():
         shuffle=True,
         callbacks=[early_stopping],
         class_weight=make_class_weights(y_train),
-        validation_steps=len(y_val)
+        validation_steps=300
     )
 
     plot_keras_model_learning_curves(history, prefix="lstm")
