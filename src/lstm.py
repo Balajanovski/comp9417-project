@@ -5,10 +5,11 @@ from src.metrics import make_keras_model_metrics
 from src.util import load_data_word2vec_deep_learning
 from tensorflow.keras.callbacks import EarlyStopping
 from src.util import plot_keras_model_learning_curves
+from sys import argv
 
 
 def main():
-    X_train, X_test, y_train, y_test = load_data_word2vec_deep_learning()
+    X_train, X_test, y_train, y_test = load_data_word2vec_deep_learning(argv[1])
 
     model = create_lstm_model(X_train.shape[1:])
     early_stopping = EarlyStopping(
