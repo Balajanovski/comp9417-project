@@ -103,9 +103,13 @@ def load_data_word2vec_deep_learning(
 
     for i, sentence in enumerate(X_train_strings):
         for j, word in enumerate(sentence.split(" ")):
+            if j >= sequence_length:
+                break
             X_train[i][j] = get_word2vec_from_map(word, wordvec_map)
     for i, sentence in enumerate(X_test_strings):
         for j, word in enumerate(sentence.split(" ")):
+            if j >= sequence_length:
+                break
             X_test[i][j] = get_word2vec_from_map(word, wordvec_map)
 
     return X_train, X_test, y_train, y_test
