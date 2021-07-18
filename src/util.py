@@ -92,7 +92,7 @@ def load_data_word2vec_deep_learning(
     print(f"Word 2 vec dimensions {word_vec_dims}")
 
     X_train_strings, X_test_strings, y_train, y_test = load_data_raw(path, portion_to_load=portion_to_load)
-    X_train_strings, X_val_strings, y_train, y_val = train_test_split(X_train_strings, y_train, test_size=0.2, stratify=y_train)
+    X_train_strings, X_val_strings, y_train, y_val = train_test_split(X_train_strings, y_train, test_size=validation_split, stratify=y_train)
 
     if balance:
         X_train_strings, y_train = sample_data(X_train_strings, y_train)
@@ -116,12 +116,12 @@ def load_data_word2vec_deep_learning(
                     batch_y = np.zeros((batch_size))
                     batch_i = 0
 
-                for j, word in enumerate(X_train_strings[i].split(" ")):
+                for j, word in enumerate(X[i].split(" ")):
                     if j >= sequence_length:
                         break
                     batch_X[batch_i][j] = get_word2vec_from_map(word, wordvec_map)
 
-                batch_y[batch_i] = y_train[i]
+                batch_y[batch_i] = y[i]
                 batch_i += 1
 
     return _create_generator(X_train_strings, y_train), _create_generator(X_val_strings, y_val), _create_generator(X_test_strings, y_test), y_train, y_val, y_test
