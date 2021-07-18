@@ -108,7 +108,7 @@ def load_data_word2vec_deep_learning(
         batch_i = 0
 
         while True:
-            for i in range(len(X_train_strings)):
+            for i in range(len(X)):
                 for j, word in enumerate(X[i].split(" ")):
                     if j >= sequence_length:
                         break
