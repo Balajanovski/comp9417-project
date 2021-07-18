@@ -1,4 +1,3 @@
-import pandas as pd
 from typing import Tuple, List
 import numpy as np
 import random
@@ -24,5 +23,6 @@ def sample_data(X: List, y: np.ndarray) -> Tuple[List, np.ndarray]:
     final_index = random.sample(pos_index, sample_amount) + random.sample(
         neg_index, sample_amount
     )
+    random.shuffle(final_index)
 
     return [X[i] for i in final_index], y[final_index]
