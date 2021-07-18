@@ -5,28 +5,41 @@ from src.metrics import make_keras_model_metrics
 from src.util import load_data_word2vec_deep_learning
 from tensorflow.keras.callbacks import EarlyStopping
 from src.util import plot_keras_model_learning_curves
+from sys import argv
+from src.util import make_class_weights
+import numpy as np
+from src.metrics import get_metrics, print_metrics
 
 
 def main():
-    X_train, X_test, y_train, y_test = load_data_word2vec_deep_learning()
+    seq_len = 142
+    train, val, test, y_train, y_val, y_test = load_data_word2vec_deep_learning(argv[1], portion_to_load=1.0, balance=True, sequence_length=seq_len, portion_test_to_load=0.01)
 
-    model = create_cnn_model(X_train.shape[1:])
+    model = create_cnn_model((seq_len, 300))
     early_stopping = EarlyStopping(
         monitor="val_loss", verbose=1, patience=5, mode="min", restore_best_weights=True
     )
+
     history = model.fit(
-        X_train,
-        y_train,
-        batch_size=32,
+        train,
+        steps_per_epoch=3000,
         epochs=100,
-        validation_split=0.2,
+        validation_data=val,
         shuffle=True,
         callbacks=[early_stopping],
+        class_weight=make_class_weights(y_train),
+        validation_steps=3000,
     )
 
-    model.evaluate(X_test, y_test)
-
     plot_keras_model_learning_curves(history, prefix="cnn")
+
+    y_pred = []
+    for pred in model.predict(test, steps=len(y_test)):
+        y_pred.extend(pred > 0.5)
+    y_pred = np.array(y_pred)
+
+    metrics = get_metrics(y_pred, y_test)
+    print_metrics(metrics)
 
 
 def create_cnn_model(
