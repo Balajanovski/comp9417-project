@@ -10,15 +10,15 @@ import os
 
 
 def run_naive_bayes(
-    path: str, is_bernouli: bool, min_ngram: int, max_ngram: int
+    path: str, is_bernoulli: bool, min_ngram: int, max_ngram: int
 ) -> Dict[str, float]:
     st = time()
 
     X_train, X_test, y_train, y_test = util.load_data_bow(
-        path, is_bernouli, min_ngram, max_ngram
+        path, is_bernoulli, min_ngram, max_ngram
     )
 
-    model = BernoulliNB() if is_bernouli else MultinomialNB()
+    model = BernoulliNB() if is_bernoulli else MultinomialNB()
 
     print("Fitting model")
     model.fit(X_train, y_train)
@@ -32,13 +32,13 @@ def run_naive_bayes(
     return metrics
 
 
-def plot_all(path: str, n: int, is_bernouli: bool) -> None:
+def plot_all(path: str, n: int, is_bernoulli: bool) -> None:
     print(
-        f"Starting {'bernouli' if is_bernouli else 'multinomial'} for ngrams up to {n}"
+        f"Starting {'bernoulli' if is_bernoulli else 'multinomial'} for ngrams up to {n}"
     )
 
     x, y = [i for i in range(1, n + 1)], [
-        run_naive_bayes(path, is_bernouli, i, i)["f1"] for i in range(1, n + 1)
+        run_naive_bayes(path, is_bernoulli, i, i)["f1"] for i in range(1, n + 1)
     ]
     plt.xlabel("n-grams number")
     plt.ylabel("f1-score")
@@ -51,15 +51,15 @@ def plot_all(path: str, n: int, is_bernouli: bool) -> None:
 def main():
     args = sys.argv
 
-    if args[1] != "bernouli" and args[1] != "multinomial":
+    if args[1] != "bernoulli" and args[1] != "multinomial":
         raise RuntimeError(
-            "invalid input, argument 1 must be either 'bernouli' or 'multinomial'"
+            "invalid input, argument 1 must be either 'bernoulli' or 'multinomial'"
         )
 
     if len(args) == 4:
-        plot_all(args[3], int(args[2]), args[1] == "bernouli")
+        plot_all(args[3], int(args[2]), args[1] == "bernoulli")
     else:
-        run_naive_bayes(args[4], args[1] == "bernouli", int(args[2]), int(args[3]))
+        run_naive_bayes(args[4], args[1] == "bernoulli", int(args[2]), int(args[3]))
 
 
 if __name__ == "__main__":

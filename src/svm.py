@@ -7,14 +7,14 @@ import sys
 
 def run_svm(path: str, type, kernel):
     st = time()
-    if type == "bernouli":
+    if type == "bernoulli":
         X_train, X_test, y_train, y_test = util.load_data_bow(path, True, 1, 1)
     elif type == "multinomial":
         X_train, X_test, y_train, y_test = util.load_data_bow(path, False, 1, 1)
     elif type == "word2vec":
         X_train, X_test, y_train, y_test = util.load_data_word2vec_sentence(path)
     else:
-        raise RuntimeError("invalid input, argument 1 must be either 'bernouli', 'multinomial' or 'word2vec'")
+        raise RuntimeError("invalid input, argument 1 must be either 'bernoulli', 'multinomial' or 'word2vec'")
     if kernel == "linear":
         model = LinearSVC(verbose=1)
     else:
