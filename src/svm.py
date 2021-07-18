@@ -5,7 +5,7 @@ from src.metrics import print_metrics, get_metrics
 import sys
 
 
-def run_svm(path: str, type, kernel):
+def run_svm(path: str, type, kernel, c):
     st = time()
     if type == "bernoulli":
         X_train, X_test, y_train, y_test = util.load_data_bow(path, True, 1, 1)
@@ -32,7 +32,7 @@ def run_svm(path: str, type, kernel):
 
 def main():
     args = sys.argv
-    run_svm(args[3], args[1], args[2])
+    run_svm(args[4], args[1], args[2], int(args[3]))
 
 
 if __name__ == "__main__":
