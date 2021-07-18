@@ -31,8 +31,9 @@ def load_data_raw(path: str, portion_to_load: float = 1.0) -> Tuple[List[str], n
     df = pd.read_csv(os.path.join(PROCESSED_DATA_FOLDER_PATH, path)).replace(np.nan, '', regex=True)
     X_raw, y_raw = df["question_text"].to_list(), df["target"].to_numpy()
 
-    portion_X = X_raw[:round(len(X_raw) * portion_to_load)]
-    portion_Y = y_raw[:round(len(y_raw) * portion_to_load)]
+    portion_indices = np.random.randint(0, len(X_raw), size=(round(len(X_raw) * portion_to_load),))
+    portion_X = X_raw[portion_indices]
+    portion_Y = y_raw[portion_indices]
 
     return train_test_split(portion_X, portion_Y, test_size=0.3, random_state=42, stratify=portion_Y)
 
