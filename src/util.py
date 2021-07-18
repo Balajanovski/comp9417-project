@@ -1,7 +1,7 @@
 import pandas as pd
 from processed_data.processed_data_folder import PROCESSED_DATA_FOLDER_PATH
 import os
-from typing import List, Tuple, Optional, Dict
+from typing import List, Tuple, Optional, Dict, Generator
 from sklearn.feature_extraction.text import CountVectorizer
 import numpy as np
 from gensim.models import KeyedVectors
@@ -78,8 +78,8 @@ def load_data_word2vec_sentence(
 
 
 def load_data_word2vec_deep_learning(
-    path: str, sequence_length: Optional[int] = None, portion_to_load: float = 1.0, balance: bool = False
-) -> Tuple[np.array, np.array, np.array, np.array]:
+    path: str, sequence_length: Optional[int] = None, portion_to_load: float = 1.0, balance: bool = False, batch_size: int = 32, validation_split: float = 0.2
+) -> Tuple[Generator, Generator, Generator, np.ndarray, np.ndarray, np.ndarray]:
     wordvec_map = KeyedVectors.load_word2vec_format(
         os.path.join(
             EMBEDDINGS_FOLDER_PATH,
@@ -88,7 +88,11 @@ def load_data_word2vec_deep_learning(
         ),
         binary=True,
     )
+    word_vec_dims = get_word2vec_from_map("the", wordvec_map).shape[0]
+    print(f"Word 2 vec dimensions {word_vec_dims}")
+
     X_train_strings, X_test_strings, y_train, y_test = load_data_raw(path, portion_to_load=portion_to_load)
+    X_train_strings, X_val_strings, y_train, y_val = train_test_split(X_train_strings, y_train, test_size=0.2, stratify=y_train)
 
     if balance:
         X_train_strings, y_train = sample_data(X_train_strings, y_train)
@@ -98,21 +102,29 @@ def load_data_word2vec_deep_learning(
             map(lambda sentence: len(sentence.split(" ")), X_train_strings)
         )
 
-    X_train = np.zeros((len(X_train_strings), sequence_length, 300))
-    X_test = np.zeros((len(X_test_strings), sequence_length, 300))
+    def _create_generator(X, y):
+        batch_X = np.zeros((batch_size, sequence_length, word_vec_dims))
+        batch_y = np.zeros((batch_size))
+        batch_i = 0
 
-    for i, sentence in enumerate(X_train_strings):
-        for j, word in enumerate(sentence.split(" ")):
-            if j >= sequence_length:
-                break
-            X_train[i][j] = get_word2vec_from_map(word, wordvec_map)
-    for i, sentence in enumerate(X_test_strings):
-        for j, word in enumerate(sentence.split(" ")):
-            if j >= sequence_length:
-                break
-            X_test[i][j] = get_word2vec_from_map(word, wordvec_map)
+        while True:
+            for i in range(len(X_train_strings)):
+                if batch_i >= batch_size:
+                    yield batch_X, batch_y
 
-    return X_train, X_test, y_train, y_test
+                    batch_X = np.zeros(batch_size, sequence_length, word_vec_dims)
+                    batch_y = np.zeros(batch_size)
+                    batch_i = 0
+
+                for j, word in enumerate(X_train_strings[i].split(" ")):
+                    if j >= sequence_length:
+                        break
+                    batch_X[batch_i][j] = get_word2vec_from_map(word, wordvec_map)
+
+                batch_y[batch_i] = y_train[i]
+                batch_i += 1
+
+    return _create_generator(X_train_strings, y_train), _create_generator(X_val_strings, y_val), _create_generator(X_test_strings, y_test), y_train, y_val, y_test
 
 
 def get_word2vec_from_map(word: str, map) -> np.array:
@@ -144,6 +156,6 @@ def plot_keras_model_learning_curves(history, prefix: str) -> None:
 def make_class_weights(labels: np.ndarray) -> Dict:
     unique_labels = np.unique(labels)
     class_weights = class_weight.compute_class_weight('balanced',
-                                                      unique_labels,
-                                                      labels)
+                                                      classes=unique_labels,
+                                                      y=labels)
     return {label: weight for label, weight in zip(unique_labels, class_weights)}

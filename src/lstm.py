@@ -9,34 +9,30 @@ from sys import argv
 import numpy as np
 from src.metrics import get_metrics, print_metrics
 from src.util import make_class_weights
-from sklearn.model_selection import train_test_split
 
 
 def main():
-    X_train, X_test, y_train, y_test = load_data_word2vec_deep_learning(argv[1], portion_to_load=1.0, balance=True)
-    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.2, stratify=y_train)
+    seq_len = 142
+    train, val, test, y_train, _, y_test = load_data_word2vec_deep_learning(argv[1], portion_to_load=1.0, balance=True, sequence_length=seq_len)
 
-    model = create_lstm_model(X_train.shape[1:])
+    model = create_lstm_model((seq_len, 300))
     early_stopping = EarlyStopping(
         monitor="val_loss", verbose=1, patience=5, mode="min", restore_best_weights=True
     )
-    class_weights = make_class_weights(y_train)
-    print(f"Class weights: {class_weights}")
 
     history = model.fit(
-        X_train,
-        y_train,
-        batch_size=32,
+        train,
+        steps_per_epoch=3000,
         epochs=100,
-        validation_data=(X_val, y_val),
+        validation_data=val,
         shuffle=True,
         callbacks=[early_stopping],
-        class_weight=class_weights,
+        class_weight=make_class_weights(y_train),
     )
 
     plot_keras_model_learning_curves(history, prefix="lstm")
 
-    y_pred = np.array([int(pred > 0.5) for pred in model.predict(X_test)])
+    y_pred = np.array([int(pred > 0.5) for pred in model.predict(test)])
     metrics = get_metrics(y_pred, y_test)
     print_metrics(metrics)
 
