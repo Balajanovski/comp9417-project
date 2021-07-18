@@ -33,7 +33,11 @@ def main():
 
     plot_keras_model_learning_curves(history, prefix="cnn")
 
-    y_pred = np.array([int(pred > 0.5) for pred in model.predict(test, steps=len(y_test))])
+    y_pred = []
+    for pred in model.predict(test, steps=len(y_test)):
+        y_pred.extend(pred > 0.5)
+    y_pred = np.array(y_pred)
+
     metrics = get_metrics(y_pred, y_test)
     print_metrics(metrics)
 

@@ -102,20 +102,13 @@ def load_data_word2vec_deep_learning(
             map(lambda sentence: len(sentence.split(" ")), X_train_strings)
         )
 
-    def _create_generator(X, y):
+    def _create_generator(X, y, batch_size):
         batch_X = np.zeros((batch_size, sequence_length, word_vec_dims))
         batch_y = np.zeros((batch_size))
         batch_i = 0
 
         while True:
             for i in range(len(X_train_strings)):
-                if batch_i >= batch_size:
-                    yield batch_X, batch_y
-
-                    batch_X = np.zeros((batch_size, sequence_length, word_vec_dims))
-                    batch_y = np.zeros((batch_size))
-                    batch_i = 0
-
                 for j, word in enumerate(X[i].split(" ")):
                     if j >= sequence_length:
                         break
@@ -124,7 +117,14 @@ def load_data_word2vec_deep_learning(
                 batch_y[batch_i] = y[i]
                 batch_i += 1
 
-    return _create_generator(X_train_strings, y_train), _create_generator(X_val_strings, y_val), _create_generator(X_test_strings, y_test), y_train, y_val, y_test
+                if batch_i >= batch_size:
+                    yield batch_X, batch_y
+
+                    batch_X = np.zeros((batch_size, sequence_length, word_vec_dims))
+                    batch_y = np.zeros((batch_size))
+                    batch_i = 0
+
+    return _create_generator(X_train_strings, y_train, batch_size), _create_generator(X_val_strings, y_val, 1), _create_generator(X_test_strings, y_test, 1), y_train, y_val, y_test
 
 
 def get_word2vec_from_map(word: str, map) -> np.array:
