@@ -1,4 +1,4 @@
-Fitting grid search
+ Fitting grid search
 Fitting 4 folds for each of 50 candidates, totalling 200 fits
 MultinomialNB(alpha=0.35564803062231287)
 Metrics:

@@ -12,35 +12,35 @@ import os
 
 
 def run_naive_bayes(
-    path: str, is_bernoulli: bool, min_ngram: int, max_ngram: int
+    path: str, min_ngram: int, max_ngram: int
 ) -> Dict[str, float]:
-    st = time()
 
-    X_train, X_test, y_train, y_test = util.load_data_bow(
-        path, is_bernoulli, min_ngram, max_ngram
-    )
+    
+    fig, ax = plt.subplots()
 
-    model = BernoulliNB() if is_bernoulli else MultinomialNB()
-    log_alpha = np.linspace(-3,2,50)
-    alpha = 10 ** log_alpha
-    param_search = GridSearchCV(model, verbose=1, cv=KFold(n_splits=4).split(X_train), n_jobs=-1, param_grid={"alpha": alpha}, scoring="f1")
+    for name, model in [("bernoulli", BernoulliNB()), ("multinomial", MultinomialNB())]:
+        X_train, X_test, y_train, y_test = util.load_data_bow(
+            path, name=="bernoulli", min_ngram, max_ngram
+        )
+        log_alpha = np.linspace(-3,2,50)
+        alpha = 10 ** log_alpha
+        param_search = GridSearchCV(model, verbose=1, cv=KFold(n_splits=4).split(X_train), n_jobs=-1, param_grid={"alpha": alpha}, scoring="f1")
 
-    print("Fitting grid search")
-    param_search.fit(X_train, y_train)
-    model = param_search.best_estimator_
-    print(model)
+        param_search.fit(X_train, y_train)
+        model = param_search.best_estimator_
+        print(name,model)
 
-    y_pred = model.predict(X_test)
-    metrics = get_metrics(y_pred, y_test)
-    print_metrics(metrics)
+        y_pred = model.predict(X_test)
+        metrics = get_metrics(y_pred, y_test)
+        print_metrics(metrics)
 
-    print(f"Time: {time()-st}s")
+        print(param_search.cv_results_)
+        ax.plot(log_alpha, param_search.cv_results_["mean_test_score"],label=name)
 
-    print(param_search.cv_results_)
-
-    plt.plot(log_alpha, param_search.cv_results_["mean_test_score"])
-    plt.xlabel("log(alpha)")
-    plt.ylabel("average CV test F1-score")
+    #plt.plot(log_alpha, param_search.cv_results_["mean_test_score"])
+    ax.set_xlabel("log(alpha)")
+    ax.set_ylabel("average CV test F1-score")
+    ax.legend()
     plt.show()
 
     return metrics
@@ -48,11 +48,7 @@ def run_naive_bayes(
 def main():
     args = sys.argv
 
-    if args[1] != "bernoulli" and args[1] != "multinomial":
-        raise RuntimeError(
-            "invalid input, argument 1 must be either 'bernoulli' or 'multinomial'"
-        )
-    run_naive_bayes(args[4], args[1] == "bernoulli", int(args[2]), int(args[3]))
+    run_naive_bayes(args[3], int(args[1]), int(args[2]))
 
 
 if __name__ == "__main__":
