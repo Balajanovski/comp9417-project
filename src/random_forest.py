@@ -9,10 +9,12 @@ def random_forest(path: str, max_depth, n_trees, type):
     st = time()
     if type == "bernoulli":
         X_train, X_test, y_train, y_test = util.load_data_bow(path, True, 1, 1)
+    elif type == "multinomial":
+        X_train, X_test, y_train, y_test = util.load_data_bow(path, False, 1, 1)
     elif type == "word2vec":
         X_train, X_test, y_train, y_test = util.load_data_word2vec_sentence(path)
     else:
-        raise RuntimeError("third argument must be `bernoulli` or `word2vec`")
+        raise RuntimeError("third argument must be `bernoulli`, 'multinomial' or `word2vec`")
 
     model = RandomForestClassifier(
         n_estimators=n_trees, max_depth=max_depth, verbose=1, n_jobs=-1

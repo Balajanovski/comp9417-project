@@ -16,18 +16,11 @@ def run_svm(path: str, type, kernel):
     else:
         raise RuntimeError("invalid input, argument 1 must be either 'bernoulli', 'multinomial' or 'word2vec'")
     if kernel == "linear":
-<<<<<<< HEAD
         # speed increase
         model = LinearSVC(verbose=1, C=c, class_weight={0:0.2,1:3}, max_iter=2000)
     else:
         model = SVC(kernel=kernel, verbose=1, C=c, class_weight="balanced")
     
-=======
-        model = LinearSVC(verbose=1)
-    else:
-        model = SVC(kernel=kernel, verbose=1)
-
->>>>>>> da2b78df21ac96711a1cf4da74c3461c430508be
     print("Fitting model")
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)

@@ -8,12 +8,14 @@ import numpy as np
 from sklearn.model_selection import GridSearchCV, KFold
 import matplotlib.pyplot as plt
 
-def random_forest(n_trees, type):
+def random_forest(path: str, n_trees: int, type: str):
     st = time()
     if type == "bernoulli":
-        X_train, X_test, y_train, y_test = util.load_data_bow(True, 1, 1)
+        X_train, X_test, y_train, y_test = util.load_data_bow(path, True, 1, 1)
+    elif type == "multinomial":
+        X_train, X_test, y_train, y_test = util.load_data_bow(path, False, 1, 1)
     elif type == "word2vec":
-        X_train, X_test, y_train, y_test = util.load_data_word2vec_sentence()
+        X_train, X_test, y_train, y_test = util.load_data_word2vec_sentence(path)
     else:
         raise "third argument must be `bernoulli` or `word2vec`"
     
@@ -21,7 +23,7 @@ def random_forest(n_trees, type):
     max_depth = 10 ** max_depth_log
 
     model = RandomForestClassifier(n_estimators=n_trees, n_jobs=-1)
-    param_search = GridSearchCV(model, verbose=1, cv=KFold(n_splits=4).split(X_train), n_jobs=-1, param_grid={"max_depth": max_depth})
+    param_search = GridSearchCV(model, verbose=1, cv=KFold(n_splits=4).split(X_train), n_jobs=-1, param_grid={"max_depth": max_depth}, scoring="f1")
 
     print("Fitting parameter search for random forest")
     param_search.fit(X_train, y_train)
@@ -35,15 +37,13 @@ def random_forest(n_trees, type):
 
     plt.plot(max_depth_log, param_search.cv_results_["mean_test_score"])
     plt.xlabel("log(max_depth)")
-    plt.ylabel("average CV test accuracy")
+    plt.ylabel("average CV test F1-score")
     plt.show()
+    print(param_search.cv_results_)
 
 def main():
     args = sys.argv
-    n_trees = int(args[1])
-    type = args[2]
-
-    random_forest(n_trees, type)
+    random_forest(args[3], int(args[1]), args[2])
 
 if __name__ == "__main__":
     main()

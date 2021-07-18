@@ -27,17 +27,11 @@ def create_bags_of_words(
     return X_train, X_test
 
 
-<<<<<<< HEAD
-    test_df = pd.read_csv(os.path.join(PROCESSED_DATA_FOLDER_PATH, "processed_test.csv"))
-    test_df["question_text"] = test_df["question_text"].apply(str)
-    X_test, y_test = test_df["question_text"].to_list(), test_df["target"].to_numpy()
-=======
 def load_data_raw(path: str) -> Tuple[List[str], np.array, List[str], np.array]:
     df = pd.read_csv(os.path.join(PROCESSED_DATA_FOLDER_PATH, path)).replace(np.nan, '', regex=True)
     X_raw, y_raw = df["question_text"].to_list(), df["target"].to_numpy()
 
-    return train_test_split(X_raw, y_raw, test_size=0.3, random_state=42, stratify=y_raw)
->>>>>>> da2b78df21ac96711a1cf4da74c3461c430508be
+    return train_test_split(X_raw, y_raw, train_size=0.1, test_size=0.3, random_state=42, stratify=y_raw)
 
 
 def load_data_bow(
