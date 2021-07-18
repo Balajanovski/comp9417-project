@@ -78,7 +78,7 @@ def load_data_word2vec_sentence(
 
 
 def load_data_word2vec_deep_learning(
-    path: str, sequence_length: Optional[int] = None, portion_to_load: float = 1.0, balance: bool = False, batch_size: int = 32, validation_split: float = 0.2
+    path: str, sequence_length: Optional[int] = None, portion_to_load: float = 1.0, portion_test_to_load: float = 1.0, balance: bool = False, batch_size: int = 32, validation_split: float = 0.2
 ) -> Tuple[Generator, Generator, Generator, np.ndarray, np.ndarray, np.ndarray]:
     wordvec_map = KeyedVectors.load_word2vec_format(
         os.path.join(
@@ -92,6 +92,11 @@ def load_data_word2vec_deep_learning(
     print(f"Word 2 vec dimensions {word_vec_dims}")
 
     X_train_strings, X_test_strings, y_train, y_test = load_data_raw(path, portion_to_load=portion_to_load)
+
+    test_sample_indices = np.random.randint(0, len(X_test_strings), size=round(len(X_test_strings) * portion_test_to_load))
+    X_test_strings = [X_test_strings[i] for i in test_sample_indices]
+    y_test = y_test[test_sample_indices]
+
     X_train_strings, X_val_strings, y_train, y_val = train_test_split(X_train_strings, y_train, test_size=validation_split, stratify=y_train)
 
     if balance:
