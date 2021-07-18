@@ -13,7 +13,7 @@ from src.util import make_class_weights
 
 def main():
     seq_len = 142
-    train, val, test, y_train, _, y_test = load_data_word2vec_deep_learning(argv[1], portion_to_load=1.0, balance=True, sequence_length=seq_len)
+    train, val, test, y_train, y_val, y_test = load_data_word2vec_deep_learning(argv[1], portion_to_load=1.0, balance=True, sequence_length=seq_len)
 
     model = create_lstm_model((seq_len, 300))
     early_stopping = EarlyStopping(
@@ -28,11 +28,12 @@ def main():
         shuffle=True,
         callbacks=[early_stopping],
         class_weight=make_class_weights(y_train),
+        validation_steps=len(y_val)
     )
 
     plot_keras_model_learning_curves(history, prefix="lstm")
 
-    y_pred = np.array([int(pred > 0.5) for pred in model.predict(test)])
+    y_pred = np.array([int(pred > 0.5) for pred in model.predict(test, steps=len(y_test))])
     metrics = get_metrics(y_pred, y_test)
     print_metrics(metrics)
 
