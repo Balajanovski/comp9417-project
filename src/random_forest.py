@@ -12,7 +12,7 @@ def random_forest(path: str, max_depth, n_trees, type):
     elif type == "multinomial":
         X_train, X_test, y_train, y_test = util.load_data_bow(path, False, 1, 1)
     elif type == "word2vec":
-        X_train, X_test, y_train, y_test = util.load_data_word2vec_sentence(path)
+        X_train, X_test, y_train, y_test = util.load_data_word2vec_sentence_tfidf(path, "punct_stopwords_removed_lemmatized_word_map.csv", True)
     else:
         raise RuntimeError("third argument must be `bernoulli`, 'multinomial' or `word2vec`")
 
