@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from plots import PLOTS_FOLDER_PATH
 from sklearn.model_selection import train_test_split
 from sklearn.utils import class_weight
+from src.under_sampler import sample_data
 
 
 def create_bags_of_words(
@@ -28,7 +29,7 @@ def create_bags_of_words(
     return X_train, X_test
 
 
-def load_data_raw(path: str, portion_to_load: float = 1.0) -> Tuple[List[str], np.array, List[str], np.array]:
+def load_data_raw(path: str, portion_to_load: float = 1.0) -> Tuple[List[str], List[str], np.ndarray, np.ndarray]:
     df = pd.read_csv(os.path.join(PROCESSED_DATA_FOLDER_PATH, path)).replace(np.nan, '', regex=True)
     X_raw, y_raw = df["question_text"].to_list(), df["target"].to_numpy()
 
@@ -77,7 +78,7 @@ def load_data_word2vec_sentence(
 
 
 def load_data_word2vec_deep_learning(
-    path: str, sequence_length: Optional[int] = None, portion_to_load: float = 1.0,
+    path: str, sequence_length: Optional[int] = None, portion_to_load: float = 1.0, balance: bool = False
 ) -> Tuple[np.array, np.array, np.array, np.array]:
     wordvec_map = KeyedVectors.load_word2vec_format(
         os.path.join(
@@ -88,6 +89,9 @@ def load_data_word2vec_deep_learning(
         binary=True,
     )
     X_train_strings, X_test_strings, y_train, y_test = load_data_raw(path, portion_to_load=portion_to_load)
+
+    if balance:
+        X_train_strings, y_train = sample_data(X_train_strings, y_train)
 
     if sequence_length is None:
         sequence_length = max(
