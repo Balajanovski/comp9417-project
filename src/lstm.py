@@ -4,9 +4,7 @@ from typing import Tuple
 from src.metrics import make_keras_model_metrics
 from src.util import load_data_word2vec_deep_learning
 from tensorflow.keras.callbacks import EarlyStopping
-import matplotlib.pyplot as plt
-import os
-from plots import PLOTS_FOLDER_PATH
+from src.util import plot_keras_model_learning_curves
 
 
 def main():
@@ -28,21 +26,7 @@ def main():
 
     model.evaluate(X_test, y_test)
 
-    plt.plot(history.history["accuracy"])
-    plt.plot(history.history["val_accuracy"])
-    plt.title("model accuracy")
-    plt.ylabel("accuracy")
-    plt.xlabel("epoch")
-    plt.legend(["train", "test"], loc="upper left")
-    plt.savefig(os.path.join(PLOTS_FOLDER_PATH, "lstm_accuracy_curve.png"))
-
-    plt.plot(history.history["loss"])
-    plt.plot(history.history["val_loss"])
-    plt.title("model loss")
-    plt.ylabel("loss")
-    plt.xlabel("epoch")
-    plt.legend(["train", "test"], loc="upper left")
-    plt.savefig(os.path.join(PLOTS_FOLDER_PATH, "lstm_loss_curve.png"))
+    plot_keras_model_learning_curves(history, prefix="lstm")
 
 
 def create_lstm_model(
