@@ -6,21 +6,20 @@ from src.util import load_data_word2vec_deep_learning
 from tensorflow.keras.callbacks import EarlyStopping
 from src.util import plot_keras_model_learning_curves
 from sys import argv
-from sklearn.utils import class_weight
+from src.util import make_class_weights
 import numpy as np
 from src.metrics import get_metrics, print_metrics
 
 
 def main():
-    X_train, X_test, y_train, y_test = load_data_word2vec_deep_learning(argv[1], portion_to_load=0.3)
+    X_train, X_test, y_train, y_test = load_data_word2vec_deep_learning(argv[1], portion_to_load=0.1)
 
     model = create_cnn_model(X_train.shape[1:])
     early_stopping = EarlyStopping(
         monitor="val_loss", verbose=1, patience=5, mode="min", restore_best_weights=True
     )
-    class_weights = class_weight.compute_class_weight('balanced',
-                                                      np.unique(y_train),
-                                                      y_train)
+    class_weights = make_class_weights(y_train)
+
     history = model.fit(
         X_train,
         y_train,

@@ -1,7 +1,7 @@
 import pandas as pd
 from processed_data.processed_data_folder import PROCESSED_DATA_FOLDER_PATH
 import os
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Dict
 from sklearn.feature_extraction.text import CountVectorizer
 import numpy as np
 from gensim.models import KeyedVectors
@@ -9,6 +9,7 @@ from embeddings import EMBEDDINGS_FOLDER_PATH
 import matplotlib.pyplot as plt
 from plots import PLOTS_FOLDER_PATH
 from sklearn.model_selection import train_test_split
+from sklearn.utils import class_weight
 
 
 def create_bags_of_words(
@@ -130,3 +131,11 @@ def plot_keras_model_learning_curves(history, prefix: str) -> None:
     plt.legend(["train", "val"], loc="upper left")
     plt.savefig(os.path.join(PLOTS_FOLDER_PATH, f"{prefix}_loss_curve.png"))
     plt.clf()
+
+
+def make_class_weights(labels: np.ndarray) -> Dict:
+    unique_labels = np.unique(labels)
+    class_weights = class_weight.compute_class_weight('balanced',
+                                                      unique_labels,
+                                                      labels)
+    return {label: weight for label, weight in zip(unique_labels, class_weights)}
