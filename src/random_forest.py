@@ -5,6 +5,7 @@ import tqdm
 from src.metrics import print_metrics, get_metrics
 import sys
 
+
 def random_forest(max_depth, n_trees, type):
     st = time()
     if type == "bernouli":
@@ -13,8 +14,10 @@ def random_forest(max_depth, n_trees, type):
         X_train, X_test, y_train, y_test = util.load_data_word2vec_sentence()
     else:
         raise "third argument must be `bernouli` or `word2vec`"
-    
-    model = RandomForestClassifier(n_estimators=n_trees, max_depth=max_depth, verbose=1, n_jobs=-1)
+
+    model = RandomForestClassifier(
+        n_estimators=n_trees, max_depth=max_depth, verbose=1, n_jobs=-1
+    )
 
     print("Fitting model")
     model.fit(X_train, y_train)
@@ -22,8 +25,8 @@ def random_forest(max_depth, n_trees, type):
     metrics = get_metrics(y_pred, y_test)
     print_metrics(metrics)
 
-
     print(f"Time: {time()-st}s")
+
 
 def main():
     args = sys.argv
@@ -32,6 +35,7 @@ def main():
     type = args[3]
 
     random_forest(max_depth, n_trees, type)
+
 
 if __name__ == "__main__":
     main()

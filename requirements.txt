@@ -7,3 +7,4 @@ gensim
 imblearn
 pandas
 tqdm
+contextualSpellCheck

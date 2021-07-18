@@ -10,11 +10,11 @@ All models should be run from the root directory
 
 ### Naive Bayes
 
-`python -m src.naive_bayes [distribution_type] [ngram_min] [ngram_max]`
+`python -m src.naive_bayes [distribution_type] [ngram_min] [ngram_max] [data_file]`
 
 where `distribution_type` is either `bernouli` or `multinomial`, `ngram_min` and `ngram_max` are the smallest and largest n-grams to consider, respectively
 
-eg `python -m src.naive_bayes bernouli 1 3`
+eg `python -m src.naive_bayes bernouli 1 3 punct_removed.csv`
 
 #### OR
 
@@ -24,7 +24,7 @@ to print out a plot for all ngram numbers up to `ngram_max`
 
 ### Support Vector Machine
 
-`python -m src.svm [data_distribution] [kernel]`
+`python -m src.svm [data_distribution] [kernel] [data_file]`
 
 where `data_distribution` is either `bernouli` or `multinomial` for bag-of-words or `word2vec` for word vectors. `kernel` is the choice of kernel (can be `linear`, `poly`, `rbf`, `sigmoid`)
 
