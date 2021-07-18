@@ -22,8 +22,8 @@ def random_forest(path: str, n_trees: int, type: str):
     max_depth_log = np.linspace(2, 4, 20)
     max_depth = 10 ** max_depth_log
 
-    model = RandomForestClassifier(n_estimators=n_trees, n_jobs=-1)
-    param_search = GridSearchCV(model, verbose=1, cv=KFold(n_splits=4).split(X_train), n_jobs=-1, param_grid={"max_depth": max_depth}, scoring="f1")
+    model = RandomForestClassifier(n_estimators=n_trees, n_jobs=-1, random_state=8)
+    param_search = GridSearchCV(model, verbose=1, cv=KFold(n_splits=4).split(X_train), n_jobs=-1, param_grid={"max_depth": max_depth}, scoring=("f1","accuracy"), refit="f1")
 
     print("Fitting parameter search for random forest")
     param_search.fit(X_train, y_train)
@@ -35,7 +35,7 @@ def random_forest(path: str, n_trees: int, type: str):
 
     print(f"Time: {time()-st}s")
 
-    plt.plot(max_depth_log, param_search.cv_results_["mean_test_score"])
+    plt.plot(max_depth_log, param_search.cv_results_["mean_test_f1"])
     plt.xlabel("log(max_depth)")
     plt.ylabel("average CV test F1-score")
     plt.show()
