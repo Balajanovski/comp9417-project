@@ -2,13 +2,14 @@ import pandas as pd
 from processed_data.processed_data_folder import PROCESSED_DATA_FOLDER_PATH
 import os
 from typing import List, Tuple, Optional
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 import numpy as np
 from gensim.models import KeyedVectors, TfidfModel
 from embeddings import EMBEDDINGS_FOLDER_PATH
 import matplotlib.pyplot as plt
 from plots import PLOTS_FOLDER_PATH
 from sklearn.model_selection import train_test_split
+from gensim.matutils import Sparse2Corpus, corpus2csc
 
 
 def create_bags_of_words(
@@ -70,25 +71,31 @@ def load_data_word2vec_sentence(
         )
     return X_train, X_test, y_train, y_test
 
-def load_data_word2vec_sentence_tfidf(path: str, wordmap_path:str, is_binary: bool):
+def load_data_word2vec_sentence_tfidf(
+    path: str
+) -> Tuple[np.array, np.array, np.array, np.array]:
     wordvec_map = KeyedVectors.load_word2vec_format(
+        
         os.path.join(
             EMBEDDINGS_FOLDER_PATH,
             "GoogleNews-vectors-negative300",
             "GoogleNews-vectors-negative300.bin",
         ),
+        
+        #"embeddings/glove.840B.300d/glove.word2vec.txt",
         binary=True,
     )
     X_train_strings, X_test_strings, y_train, y_test = load_data_raw(path)
     vectorizer = CountVectorizer(
-        token_pattern=r"[^\s]+", binary=is_binary, ngram_range=(1, 1)
+        token_pattern=r"[^\s]+", binary=False, ngram_range=(1, 1)
     )
-    wordvec_matrix = np.array([get_word2vec_from_map(word, wordvec_map)] for word in vectorizer.get_feature_names())
     X_train_vector = vectorizer.fit_transform(X_train_strings)
     X_test_vector = vectorizer.transform(X_test_strings)
-    model = TfidfModel(X_train_vector)
-    X_train_tfidf = model[X_train_vector]
-    X_test_tfidf = model[X_test_vector]
+    wordvec_matrix = np.array([get_word2vec_from_map(word, wordvec_map) for word in vectorizer.get_feature_names()])
+    tfidf = TfidfTransformer()
+    X_train_tfidf = tfidf.fit_transform(X_train_vector)
+    X_test_tfidf = tfidf.transform(X_test_vector)
+    return X_train_tfidf.dot(wordvec_matrix), X_test_tfidf.dot(wordvec_matrix), y_train, y_test
     
 
 def load_data_word2vec_deep_learning(
