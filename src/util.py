@@ -112,8 +112,8 @@ def load_data_word2vec_deep_learning(
                 if batch_i >= batch_size:
                     yield batch_X, batch_y
 
-                    batch_X = np.zeros(batch_size, sequence_length, word_vec_dims)
-                    batch_y = np.zeros(batch_size)
+                    batch_X = np.zeros((batch_size, sequence_length, word_vec_dims))
+                    batch_y = np.zeros((batch_size))
                     batch_i = 0
 
                 for j, word in enumerate(X_train_strings[i].split(" ")):
