@@ -1,8 +1,8 @@
 import pandas as pd
 from processed_data.processed_data_folder import PROCESSED_DATA_FOLDER_PATH
 import os
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from typing import List, Tuple, Optional, Dict, Generator
-from sklearn.feature_extraction.text import CountVectorizer
 import numpy as np
 from gensim.models import KeyedVectors
 from embeddings import EMBEDDINGS_FOLDER_PATH
@@ -28,8 +28,13 @@ def create_bags_of_words(
     X_test = vectorizer.transform(test_data)
     return X_train, X_test
 
+def load_data_raw(path: str) -> Tuple[List[str], List[str], np.ndarray, np.ndarray]:
+    df = pd.read_csv(os.path.join(PROCESSED_DATA_FOLDER_PATH, path)).replace(np.nan, '', regex=True)
+    X_raw, y_raw = df["question_text"].to_list(), df["target"].to_numpy()
 
-def load_data_raw(path: str, portion_to_load: float = 1.0) -> Tuple[List[str], List[str], np.ndarray, np.ndarray]:
+    return train_test_split(X_raw, y_raw, train_size=0.1, test_size=0.3, random_state=42, stratify=y_raw)
+
+def load_data_raw_deeplearning(path: str, portion_to_load: float = 1.0) -> Tuple[List[str], List[str], np.ndarray, np.ndarray]:
     df = pd.read_csv(os.path.join(PROCESSED_DATA_FOLDER_PATH, path)).replace(np.nan, '', regex=True)
     X_raw, y_raw = df["question_text"].to_list(), df["target"].to_numpy()
 
@@ -76,6 +81,32 @@ def load_data_word2vec_sentence(
         )
     return X_train, X_test, y_train, y_test
 
+def load_data_word2vec_sentence_tfidf(
+    path: str
+) -> Tuple[np.array, np.array, np.array, np.array]:
+    wordvec_map = KeyedVectors.load_word2vec_format(
+        
+        os.path.join(
+            EMBEDDINGS_FOLDER_PATH,
+            "GoogleNews-vectors-negative300",
+            "GoogleNews-vectors-negative300.bin",
+        ),
+        
+        #"embeddings/glove.840B.300d/glove.word2vec.txt",
+        binary=True,
+    )
+    X_train_strings, X_test_strings, y_train, y_test = load_data_raw(path)
+    vectorizer = CountVectorizer(
+        token_pattern=r"[^\s]+", binary=False, ngram_range=(1, 1)
+    )
+    X_train_vector = vectorizer.fit_transform(X_train_strings)
+    X_test_vector = vectorizer.transform(X_test_strings)
+    wordvec_matrix = np.array([get_word2vec_from_map(word, wordvec_map) for word in vectorizer.get_feature_names()])
+    tfidf = TfidfTransformer()
+    X_train_tfidf = tfidf.fit_transform(X_train_vector)
+    X_test_tfidf = tfidf.transform(X_test_vector)
+    return X_train_tfidf.dot(wordvec_matrix), X_test_tfidf.dot(wordvec_matrix), y_train, y_test
+    
 
 def load_data_word2vec_deep_learning(
     path: str, sequence_length: Optional[int] = None, portion_to_load: float = 1.0, portion_test_to_load: float = 1.0, balance: bool = False, batch_size: int = 32, validation_split: float = 0.2
@@ -91,7 +122,7 @@ def load_data_word2vec_deep_learning(
     word_vec_dims = get_word2vec_from_map("the", wordvec_map).shape[0]
     print(f"Word 2 vec dimensions {word_vec_dims}")
 
-    X_train_strings, X_test_strings, y_train, y_test = load_data_raw(path, portion_to_load=portion_to_load)
+    X_train_strings, X_test_strings, y_train, y_test = load_data_raw_deeplearning(path, portion_to_load=portion_to_load)
 
     test_sample_indices = np.random.randint(0, len(X_test_strings), size=round(len(X_test_strings) * portion_test_to_load))
     X_test_strings = [X_test_strings[i] for i in test_sample_indices]

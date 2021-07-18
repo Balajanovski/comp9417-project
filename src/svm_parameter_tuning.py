@@ -7,35 +7,38 @@ import tqdm
 from src.metrics import print_metrics, get_metrics
 import sys
 
+class RandomClassWeight:
+    def __init__(self, low, high):
+        self.param = uniform(low, high)
+    def rvs(self, random_state):
+        return {0: self.param.rvs(), 1: self.param.rvs()}
 
-def run_svm(type, kernel):
+def run_svm(path, type, kernel):
     st = time()
     if type == "bernoulli":
-        X_train, X_test, y_train, y_test = util.load_data_bow(True, 1, 1)
+        X_train, X_test, y_train, y_test = util.load_data_bow(path, True, 1, 1)
     elif type == "multinomial":
-        X_train, X_test, y_train, y_test = util.load_data_bow(False, 1, 1)
+        X_train, X_test, y_train, y_test = util.load_data_bow(path, False, 1, 1)
     elif type == "word2vec":
-        X_train, X_test, y_train, y_test = util.load_data_word2vec_sentence()
+        X_train, X_test, y_train, y_test = util.load_data_word2vec_sentence_tfidf(path)
     else:
         raise "invalid input, argument 1 must be either 'bernoulli', 'multinomial' or 'word2vec'"
     # model = LinearSVC(verbose=1)
-    if kernel == "linear_l1":
+    if kernel == "linear":
         # speed increase
-        model = LinearSVC(penalty="l1")
-    elif kernel == "linear_l2":
-        # speed increase
-        model = LinearSVC(penalty="l2")
+        model = LinearSVC(max_iter=2000)
     else:
-        model = SVC(kernel=kernel)
+        model = SVC(kernel=kernel, max_iter=2000)
 
     randomised_search = RandomizedSearchCV(
         model,
         cv=KFold(n_splits=4).split(X_train),
-        param_distributions={"C": uniform(0.001, 2)},
+        param_distributions={"class_weight": RandomClassWeight(0, 3)},
         random_state=8,
         n_jobs=-1,
-        n_iter=12,
+        n_iter=20,
         verbose=1,
+        scoring="f1"
     )
 
     print("Fitting randomised search")
@@ -49,11 +52,11 @@ def run_svm(type, kernel):
     print_metrics(metrics)
 
     print(f"Time: {time()-st}s")
-
+    print(randomised_search.cv_results_)
 
 def main():
     args = sys.argv
-    run_svm(args[1], args[2])
+    run_svm(args[3], args[1], args[2])
 
 
 if __name__ == "__main__":

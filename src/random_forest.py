@@ -1,3 +1,4 @@
+from sklearn.utils import class_weight
 import src.util as util
 from sklearn.ensemble import RandomForestClassifier
 from time import time
@@ -9,13 +10,15 @@ def random_forest(path: str, max_depth, n_trees, type):
     st = time()
     if type == "bernoulli":
         X_train, X_test, y_train, y_test = util.load_data_bow(path, True, 1, 1)
+    elif type == "multinomial":
+        X_train, X_test, y_train, y_test = util.load_data_bow(path, False, 1, 1)
     elif type == "word2vec":
-        X_train, X_test, y_train, y_test = util.load_data_word2vec_sentence(path)
+        X_train, X_test, y_train, y_test = util.load_data_word2vec_sentence_tfidf(path)
     else:
-        raise RuntimeError("third argument must be `bernoulli` or `word2vec`")
+        raise RuntimeError("third argument must be `bernoulli`, 'multinomial' or `word2vec`")
 
     model = RandomForestClassifier(
-        n_estimators=n_trees, max_depth=max_depth, verbose=1, n_jobs=-1
+        n_estimators=n_trees, max_depth=max_depth, verbose=1, n_jobs=-1, class_weight="balanced"
     )
 
     print("Fitting model")
