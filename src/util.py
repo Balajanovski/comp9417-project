@@ -31,7 +31,10 @@ def load_data_raw(path: str, portion_to_load: float = 1.0) -> Tuple[List[str], n
     df = pd.read_csv(os.path.join(PROCESSED_DATA_FOLDER_PATH, path)).replace(np.nan, '', regex=True)
     X_raw, y_raw = df["question_text"].to_list(), df["target"].to_numpy()
 
-    return train_test_split(X_raw[:round(len(X_raw) * portion_to_load)], y_raw[:round(len(y_raw) * portion_to_load)], test_size=0.3, random_state=42, stratify=y_raw)
+    portion_X = X_raw[:round(len(X_raw) * portion_to_load)]
+    portion_Y = y_raw[:round(len(y_raw) * portion_to_load)]
+
+    return train_test_split(portion_X, portion_Y, test_size=0.3, random_state=42, stratify=portion_Y)
 
 
 def load_data_bow(
@@ -82,7 +85,7 @@ def load_data_word2vec_deep_learning(
         ),
         binary=True,
     )
-    X_train_strings, X_test_strings, y_train, y_test = load_data_raw(path)
+    X_train_strings, X_test_strings, y_train, y_test = load_data_raw(path, portion_to_load=portion_to_load)
 
     if sequence_length is None:
         sequence_length = max(
