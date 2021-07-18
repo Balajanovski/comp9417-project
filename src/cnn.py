@@ -21,6 +21,7 @@ def main():
         monitor="val_loss", verbose=1, patience=5, mode="min", restore_best_weights=True
     )
     class_weights = make_class_weights(y_train)
+    print(f"Class weights: {class_weights}")
 
     history = model.fit(
         X_train,
