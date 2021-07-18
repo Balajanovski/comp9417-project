@@ -27,11 +27,11 @@ def create_bags_of_words(
     return X_train, X_test
 
 
-def load_data_raw(path: str) -> Tuple[List[str], np.array, List[str], np.array]:
+def load_data_raw(path: str, portion_to_load: float = 1.0) -> Tuple[List[str], np.array, List[str], np.array]:
     df = pd.read_csv(os.path.join(PROCESSED_DATA_FOLDER_PATH, path)).replace(np.nan, '', regex=True)
     X_raw, y_raw = df["question_text"].to_list(), df["target"].to_numpy()
 
-    return train_test_split(X_raw, y_raw, test_size=0.3, random_state=42, stratify=y_raw)
+    return train_test_split(X_raw[:round(len(X_raw) * portion_to_load)], y_raw[:round(len(y_raw) * portion_to_load)], test_size=0.3, random_state=42, stratify=y_raw)
 
 
 def load_data_bow(
@@ -72,7 +72,7 @@ def load_data_word2vec_sentence(
 
 
 def load_data_word2vec_deep_learning(
-    path: str, sequence_length: Optional[int] = None
+    path: str, sequence_length: Optional[int] = None, portion_to_load: float = 1.0,
 ) -> Tuple[np.array, np.array, np.array, np.array]:
     wordvec_map = KeyedVectors.load_word2vec_format(
         os.path.join(
