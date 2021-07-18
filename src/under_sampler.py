@@ -4,7 +4,7 @@ import numpy as np
 import random
 
 
-def sample_data(X: List[str], y: np.ndarray) -> Tuple[List[str], np.ndarray]:
+def sample_data(X: List, y: np.ndarray) -> Tuple[List, np.ndarray]:
     pos_index = []
     neg_index = []
 

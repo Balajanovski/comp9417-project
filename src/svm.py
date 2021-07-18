@@ -19,9 +19,9 @@ def run_svm(type, kernel, c = 1):
     #model = LinearSVC(verbose=1)
     if kernel == "linear":
         # speed increase
-        model = LinearSVC(verbose=1, C=c)
+        model = LinearSVC(verbose=1, C=c, class_weight={0:0.2,1:3}, max_iter=2000)
     else:
-        model = SVC(kernel=kernel, verbose=1, C=c)
+        model = SVC(kernel=kernel, verbose=1, C=c, class_weight="balanced")
     
     print("Fitting model")
     model.fit(X_train, y_train)
