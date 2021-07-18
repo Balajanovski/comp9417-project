@@ -36,8 +36,9 @@ def run_svm(path, type, kernel):
         param_distributions={"class_weight": RandomClassWeight(0, 3)},
         random_state=8,
         n_jobs=-1,
-        n_iter=160,
+        n_iter=9,
         verbose=1,
+        scoring="f1"
     )
 
     print("Fitting randomised search")
