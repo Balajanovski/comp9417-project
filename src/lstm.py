@@ -9,10 +9,12 @@ from sys import argv
 import numpy as np
 from src.metrics import get_metrics, print_metrics
 from src.util import make_class_weights
+from sklearn.model_selection import train_test_split
 
 
 def main():
     X_train, X_test, y_train, y_test = load_data_word2vec_deep_learning(argv[1], portion_to_load=1.0, balance=True)
+    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.2, stratify=y_train)
 
     model = create_lstm_model(X_train.shape[1:])
     early_stopping = EarlyStopping(
@@ -25,7 +27,7 @@ def main():
         y_train,
         batch_size=32,
         epochs=100,
-        validation_split=0.2,
+        validation_data=(X_val, y_val),
         shuffle=True,
         callbacks=[early_stopping],
         class_weight=class_weights,
