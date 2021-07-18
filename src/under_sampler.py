@@ -14,11 +14,15 @@ def sample_data(X: List, y: np.ndarray) -> Tuple[List, np.ndarray]:
         else:
             neg_index.append(i)
 
-    print(f"Num positive examples: {len(pos_index)}. Num negative examples: {len(neg_index)}")
+    print(
+        f"Num positive examples: {len(pos_index)}. Num negative examples: {len(neg_index)}"
+    )
 
     sample_amount = min(len(pos_index), len(neg_index))
 
     random.seed(8)
-    final_index = random.sample(pos_index, sample_amount) + random.sample(neg_index, sample_amount)
+    final_index = random.sample(pos_index, sample_amount) + random.sample(
+        neg_index, sample_amount
+    )
 
     return [X[i] for i in final_index], y[final_index]
