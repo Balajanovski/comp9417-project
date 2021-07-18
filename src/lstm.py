@@ -6,6 +6,9 @@ from src.util import load_data_word2vec_deep_learning
 from tensorflow.keras.callbacks import EarlyStopping
 from src.util import plot_keras_model_learning_curves
 from sys import argv
+from sklearn.utils import class_weight
+import numpy as np
+from src.metrics import get_metrics, print_metrics
 
 
 def main():
@@ -15,6 +18,10 @@ def main():
     early_stopping = EarlyStopping(
         monitor="val_loss", verbose=1, patience=5, mode="min", restore_best_weights=True
     )
+    class_weights = class_weight.compute_class_weight('balanced',
+                                                      np.unique(y_train),
+                                                      y_train)
+
     history = model.fit(
         X_train,
         y_train,
@@ -23,11 +30,14 @@ def main():
         validation_split=0.2,
         shuffle=True,
         callbacks=[early_stopping],
+        class_weight=class_weights,
     )
 
-    model.evaluate(X_test, y_test)
-
     plot_keras_model_learning_curves(history, prefix="lstm")
+
+    y_pred = np.array([int(pred > 0.5) for pred in model.predict(X_test)])
+    metrics = get_metrics(y_pred, y_test)
+    print_metrics(metrics)
 
 
 def create_lstm_model(
