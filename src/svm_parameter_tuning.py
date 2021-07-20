@@ -36,7 +36,7 @@ def run_svm(path, type, kernel):
         param_distributions={"class_weight": RandomClassWeight(0, 3)},
         random_state=8,
         n_jobs=-1,
-        n_iter=20,
+        n_iter=100,
         verbose=1,
         scoring="f1"
     )
