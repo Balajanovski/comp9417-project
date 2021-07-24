@@ -33,7 +33,7 @@ def run_svm(path, type, kernel):
     randomised_search = RandomizedSearchCV(
         model,
         cv=KFold(n_splits=4).split(X_train),
-        param_distributions={"class_weight": RandomClassWeight(0, 10000)},
+        param_distributions={"class_weight": RandomClassWeight(0, 100)},
         random_state=8,
         n_jobs=-1,
         n_iter=100,
