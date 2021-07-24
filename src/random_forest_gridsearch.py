@@ -38,7 +38,7 @@ def random_forest(path: str, n_trees: int, type: str):
     plt.plot(max_depth_log, param_search.cv_results_["mean_test_f1"])
     plt.xlabel("log(max_depth)")
     plt.ylabel("average CV test F1-score")
-    plt.show()
+    plt.savefig(f"plots/random_forest_search_{type}.png")
     print(param_search.cv_results_)
 
 def main():
