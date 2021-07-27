@@ -32,7 +32,7 @@ def load_data_raw(path: str) -> Tuple[List[str], List[str], np.ndarray, np.ndarr
     df = pd.read_csv(os.path.join(PROCESSED_DATA_FOLDER_PATH, path)).replace(np.nan, '', regex=True)
     X_raw, y_raw = df["question_text"].to_list(), df["target"].to_numpy()
 
-    return train_test_split(X_raw, y_raw, train_size=0.7, test_size=0.3, random_state=42, stratify=y_raw)
+    return train_test_split(X_raw, y_raw, train_size=0.1, test_size=0.3, random_state=42, stratify=y_raw)
 
 def load_data_raw_deeplearning(path: str, portion_to_load: float = 1.0) -> Tuple[List[str], List[str], np.ndarray, np.ndarray]:
     df = pd.read_csv(os.path.join(PROCESSED_DATA_FOLDER_PATH, path)).replace(np.nan, '', regex=True)
