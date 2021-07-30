@@ -1,12 +1,11 @@
-from sklearn.utils import class_weight
 import src.util as util
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC, LinearSVC
 from time import time
 from src.metrics import print_metrics, get_metrics
 import sys
+import pickle
 
-
-def random_forest(path: str, max_depth, n_trees, type):
+def run_svm(path: str, type, model_path):
     st = time()
     if type == "bernoulli":
         X_train, X_test, y_train, y_test = util.load_data_bow(path, True, 1, 1)
@@ -15,30 +14,20 @@ def random_forest(path: str, max_depth, n_trees, type):
     elif type == "word2vec":
         X_train, X_test, y_train, y_test = util.load_data_word2vec_sentence_tfidf(path)
     else:
-        raise RuntimeError("third argument must be `bernoulli`, 'multinomial' or `word2vec`")
-
-    model = RandomForestClassifier(
-        n_estimators=n_trees, max_depth=max_depth, verbose=1, n_jobs=-1, class_weight="balanced"
-    )
-
-    print("Fitting model")
-    model.fit(X_train, y_train)
+        raise RuntimeError("invalid input, argument 1 must be either 'bernoulli', 'multinomial' or 'word2vec'")
+    model = util.load_model(model_path)
+    
+    print("Running model on test set")
     y_pred = model.predict(X_test)
     metrics = get_metrics(y_pred, y_test)
     print_metrics(metrics)
-    util.save_model(model, f"random_forest_{max_depth}_{n_trees}_{type}_{path[:-4]}.sav")
-
+    
     print(f"Time: {time()-st}s")
 
 
 def main():
     args = sys.argv
-    max_depth = int(args[1])
-    n_trees = int(args[2])
-    type = args[3]
-    path = args[4]
-
-    random_forest(path, max_depth, n_trees, type)
+    run_svm(args[3], args[1], args[2])
 
 
 if __name__ == "__main__":

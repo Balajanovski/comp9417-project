@@ -11,7 +11,8 @@ from plots import PLOTS_FOLDER_PATH
 from sklearn.model_selection import train_test_split
 from sklearn.utils import class_weight
 from src.under_sampler import sample_data
-
+import pickle
+from sklearn.base import BaseEstimator
 
 def create_bags_of_words(
     train_data: List[str],
@@ -32,7 +33,7 @@ def load_data_raw(path: str) -> Tuple[List[str], List[str], np.ndarray, np.ndarr
     df = pd.read_csv(os.path.join(PROCESSED_DATA_FOLDER_PATH, path)).replace(np.nan, '', regex=True)
     X_raw, y_raw = df["question_text"].to_list(), df["target"].to_numpy()
 
-    return train_test_split(X_raw, y_raw, train_size=0.1, test_size=0.3, random_state=42, stratify=y_raw)
+    return train_test_split(X_raw, y_raw, test_size=0.3, random_state=42, stratify=y_raw)
 
 def load_data_raw_deeplearning(path: str, portion_to_load: float = 1.0) -> Tuple[List[str], List[str], np.ndarray, np.ndarray]:
     df = pd.read_csv(os.path.join(PROCESSED_DATA_FOLDER_PATH, path)).replace(np.nan, '', regex=True)
@@ -44,6 +45,11 @@ def load_data_raw_deeplearning(path: str, portion_to_load: float = 1.0) -> Tuple
 
     return train_test_split(portion_X, portion_Y, test_size=0.3, random_state=42, stratify=portion_Y)
 
+def save_model(model: BaseEstimator, name: str) -> None:
+    pickle.dump(model, open(os.path.join("model_pickles",name), "wb"))
+
+def load_model(name: str):
+    return pickle.load(open(os.path.join("model_pickles",name), "rb"))
 
 def load_data_bow(
     path: str, is_binary: bool = True, min_ngram: int = 1, max_ngram: int = 1
