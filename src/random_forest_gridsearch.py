@@ -19,7 +19,7 @@ def random_forest(path: str, n_trees: int, type: str):
     else:
         raise "third argument must be `bernoulli` or `word2vec`"
     
-    max_depth_log = np.linspace(2, 4, 20)
+    max_depth_log = np.linspace(1, 4, 20)
     max_depth = 10 ** max_depth_log
 
     model = RandomForestClassifier(n_estimators=n_trees, n_jobs=-1, random_state=8)
@@ -38,6 +38,7 @@ def random_forest(path: str, n_trees: int, type: str):
     plt.plot(max_depth_log, param_search.cv_results_["mean_test_f1"])
     plt.xlabel("log(max_depth)")
     plt.ylabel("average CV test F1-score")
+    plt.savefig(f"plots/random_forest_search_{type}.png")
     plt.show()
     print(param_search.cv_results_)
 

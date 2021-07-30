@@ -26,6 +26,7 @@ def random_forest(path: str, max_depth, n_trees, type):
     y_pred = model.predict(X_test)
     metrics = get_metrics(y_pred, y_test)
     print_metrics(metrics)
+    util.save_model(model, f"random_forest_{max_depth}_{n_trees}_{type}_{path[:-4]}.sav")
 
     print(f"Time: {time()-st}s")
 
