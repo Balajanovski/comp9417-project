@@ -17,9 +17,13 @@ The exception are the naive bayes models, which only support `bernoulli` and `mu
 
 Also, for some models, consider piping the output to a text file, as it can be large. This section is meant to serve as a guide for running the files only. Some configurations are not mentioned. To view/configure the exact settings for any model, please open the source code or view the relevant section in the report. This is especially true for sections which pertain to hyperparameter tuning. 
 
+<<<<<<< HEAD
 Furthermore, in addition to all other output, training a single model (not parameter search) will save a corresponding pickled version of the model in `model_pickles/`. All models shown in tables in the report, as well as the best model for each section, will already have a pickled version in this folder. **For running these pickled models, please see the later section.**
 
 Example command for training a model: `python -m src.svm linear 1.0 1.0 punct_stopwords_removed_lemmatized.csv`
+=======
+Example model execution: `python -m src.svm multinomial linear 1.0 1.0 punct_stopwords_removed_lemmatized.csv`
+>>>>>>> 3705b1af44a6ff15a8ef2a38efbcfd81b6d5918e
 
 ### Naive Bayes
 
