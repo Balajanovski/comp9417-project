@@ -3,7 +3,7 @@ from sklearn.svm import SVC, LinearSVC
 from time import time
 from src.metrics import print_metrics, get_metrics
 import sys
-
+import pickle
 
 def run_svm(path: str, type, kernel, c0, c1):
     st = time()
@@ -26,7 +26,8 @@ def run_svm(path: str, type, kernel, c0, c1):
     y_pred = model.predict(X_test)
     metrics = get_metrics(y_pred, y_test)
     print_metrics(metrics)
-
+    util.save_model(model, f"svm_{type}_{kernel}_{c0:.2f}_{c1:.2f}.sav")
+    
     print(f"Time: {time()-st}s")
 
 

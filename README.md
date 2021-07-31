@@ -7,8 +7,8 @@ Project created for comp9417. Kaggle competition can be found at https://www.kag
 - Ensure that the file at path `embeddings/GoogleNews-vectors-negative300/GoogleNews-vectors-negative300.bin` exists. Simply extract the `embeddings.zip` file provided in the competition downloads.
 - Execute `python -m src.preprocess` to generate the processed data (takes around 30min on CPU)
 
-## Models
-All models should be run from the root directory. When the parameter `[data_file]` is specified, enter the name of a file in `processed_data/`, eg `punct_stopwords_removed_lemmatized.csv`. The data for the model will be sourced from here. `[distribution_type]` refers to one of the following:
+## Training models directly using source code
+All model training should be run from the root directory. When the parameter `[data_file]` is specified, enter the name of a file in `processed_data/`, eg `punct_stopwords_removed_lemmatized.csv`. The data for the model will be sourced from here. `[distribution_type]` refers to one of the following:
 - `bernoulli`, for the Bernoulli ngram distribution
 - `multinomial`, for the multinomial ngram distribution
 - `word2vec`, for the Word2Vec distribution weighted with tf-idf index
@@ -17,7 +17,13 @@ The exception are the naive bayes models, which only support `bernoulli` and `mu
 
 Also, for some models, consider piping the output to a text file, as it can be large. This section is meant to serve as a guide for running the files only. Some configurations are not mentioned. To view/configure the exact settings for any model, please open the source code or view the relevant section in the report. This is especially true for sections which pertain to hyperparameter tuning. 
 
+<<<<<<< HEAD
+Furthermore, in addition to all other output, training a single model (not parameter search) will save a corresponding pickled version of the model in `model_pickles/`. All models shown in tables in the report, as well as the best model for each section, will already have a pickled version in this folder. **For running these pickled models, please see the later section.**
+
+Example command for training a model: `python -m src.svm linear 1.0 1.0 punct_stopwords_removed_lemmatized.csv`
+=======
 Example model execution: `python -m src.svm multinomial linear 1.0 1.0 punct_stopwords_removed_lemmatized.csv`
+>>>>>>> 3705b1af44a6ff15a8ef2a38efbcfd81b6d5918e
 
 ### Naive Bayes
 
@@ -68,3 +74,14 @@ Trains a single Random Forest model using the given parameters. Outputs metrics.
 where `num_trees` is the number of decision tree classifiers in the ensemble. 
 
 Performs a grid search over the `max_tree_depth` hyperparameter. Outputs parameter search results and the metrics of the best performing model. 
+
+## Running pre-trained models
+Pretrained models are stored as pickle files in the `model_pickles/` directory. The command for running a pretrained model is as follows:
+
+`python -m src.pretrained_model [distribution_type] [pickle_file_name] [data_file]`
+
+For pickle files that specify the `word2vec` distribution, please use the `punct_stopwords_removed.csv` data file. For remaining models, please use the `punct_stopwords_removed_lemmatized.csv` data file. Reasoning for these data distributions is described in the report. 
+
+Example pre-trained model execution:
+
+`python -m src.pretrained_model multinomial naive_bayes_multinomial_1_1_0.57.sav punct_stopwords_removed_lemmatized.csv `

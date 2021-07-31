@@ -18,7 +18,7 @@ def random_forest(path: str, max_depth, n_trees, type):
         raise RuntimeError("third argument must be `bernoulli`, 'multinomial' or `word2vec`")
 
     model = RandomForestClassifier(
-        n_estimators=n_trees, max_depth=max_depth, verbose=1, n_jobs=-1, class_weight="balanced"
+        n_estimators=n_trees, max_depth=max_depth, verbose=1, n_jobs=-1
     )
 
     print("Fitting model")
@@ -26,6 +26,7 @@ def random_forest(path: str, max_depth, n_trees, type):
     y_pred = model.predict(X_test)
     metrics = get_metrics(y_pred, y_test)
     print_metrics(metrics)
+    util.save_model(model, f"random_forest_{max_depth}_{n_trees}_{type}_{path[:-4]}.sav")
 
     print(f"Time: {time()-st}s")
 

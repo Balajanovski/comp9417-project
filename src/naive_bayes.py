@@ -10,7 +10,7 @@ import os
 
 
 def run_naive_bayes(
-    path: str, is_bernoulli: bool, min_ngram: int, max_ngram: int
+    path: str, is_bernoulli: bool, min_ngram: int, max_ngram: int, alpha: float
 ) -> Dict[str, float]:
     st = time()
 
@@ -18,7 +18,7 @@ def run_naive_bayes(
         path, is_bernoulli, min_ngram, max_ngram
     )
 
-    model = BernoulliNB() if is_bernoulli else MultinomialNB()
+    model = BernoulliNB(alpha=alpha) if is_bernoulli else MultinomialNB(alpha=alpha)
 
     print("Fitting model")
     model.fit(X_train, y_train)
@@ -26,6 +26,7 @@ def run_naive_bayes(
     y_pred = model.predict(X_test)
     metrics = get_metrics(y_pred, y_test)
     print_metrics(metrics)
+    util.save_model(model,f"naive_bayes_{'bernoulli' if is_bernoulli else 'multinomial'}_{min_ngram}_{max_ngram}_{alpha:.2f}.sav")
 
     print(f"Time: {time()-st}s")
 
@@ -59,7 +60,7 @@ def main():
     if len(args) == 4:
         plot_all(args[3], int(args[2]), args[1] == "bernoulli")
     else:
-        run_naive_bayes(args[4], args[1] == "bernoulli", int(args[2]), int(args[3]))
+        run_naive_bayes(args[5], args[1] == "bernoulli", int(args[2]), int(args[3]), float(args[4]))
 
 
 if __name__ == "__main__":

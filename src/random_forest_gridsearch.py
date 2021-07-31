@@ -19,7 +19,7 @@ def random_forest(path: str, n_trees: int, type: str):
     else:
         raise "third argument must be `bernoulli` or `word2vec`"
     
-    max_depth_log = np.linspace(1, 20, 20)
+    max_depth_log = np.linspace(1, 4, 20)
     max_depth = 10 ** max_depth_log
 
     model = RandomForestClassifier(n_estimators=n_trees, n_jobs=-1, random_state=8)
