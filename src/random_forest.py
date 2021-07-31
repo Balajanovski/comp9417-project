@@ -18,7 +18,7 @@ def random_forest(path: str, max_depth, n_trees, type):
         raise RuntimeError("third argument must be `bernoulli`, 'multinomial' or `word2vec`")
 
     model = RandomForestClassifier(
-        n_estimators=n_trees, max_depth=max_depth, verbose=1, n_jobs=-1, class_weight="balanced"
+        n_estimators=n_trees, max_depth=max_depth, verbose=1, n_jobs=-1
     )
 
     print("Fitting model")

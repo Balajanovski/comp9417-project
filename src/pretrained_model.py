@@ -5,7 +5,7 @@ from src.metrics import print_metrics, get_metrics
 import sys
 import pickle
 
-def run_svm(path: str, type, model_path):
+def run_pretrained_model(path: str, type, model_path):
     st = time()
     if type == "bernoulli":
         X_train, X_test, y_train, y_test = util.load_data_bow(path, True, 1, 1)
@@ -27,7 +27,7 @@ def run_svm(path: str, type, model_path):
 
 def main():
     args = sys.argv
-    run_svm(args[3], args[1], args[2])
+    run_pretrained_model(args[3], args[1], args[2])
 
 
 if __name__ == "__main__":
